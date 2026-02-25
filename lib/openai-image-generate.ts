@@ -1,7 +1,9 @@
-import OpenAi from "openai";
+import OpenAI from "openai";
 
 export async function openaiTextToImage(prompt: string) {
-  const openai = new OpenAi();
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   const response = await openai.images.generate({
     model: "dall-e-3",
@@ -11,11 +13,12 @@ export async function openaiTextToImage(prompt: string) {
     n: 1,
   });
 
-  const ImageData = response?.data?.[0].b64_json;
+  const ImageData = response?.data?.[0]?.b64_json;
   if (!ImageData) {
     console.error("No image data found");
-    return;
+    return null;
   }
+
   const buffer = Buffer.from(ImageData, "base64");
-  return;
+  return buffer;
 }

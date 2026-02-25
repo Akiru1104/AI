@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import openai from "openai/index.js";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export const POST = async (req: Request) => {
   try {
@@ -12,7 +16,7 @@ export const POST = async (req: Request) => {
           role: "user",
           content: [
             {
-              type: "input_image",
+              type: "input_text",
               text: "Describe this image in detail",
             },
             {
@@ -25,9 +29,8 @@ export const POST = async (req: Request) => {
     });
 
     const caption = response.output_text;
-
     return NextResponse.json({ caption });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 };

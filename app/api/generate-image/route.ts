@@ -14,5 +14,7 @@ export const POST = async (req: Request) => {
 
   const base64Image = buffer.toString("base64");
 
-  return NextResponse.json({ image: `data:image/png;base64,${base64Image}` });
+  return NextResponse.json({
+    image: `data:image/png;base64,${base64Image}`,
+  });
 };

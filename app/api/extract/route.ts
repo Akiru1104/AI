@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { text } from "stream/consumers";
 
 export const POST = async (req: Request) => {
   const { prompt } = await req.json();
 
-  const response = await fetch("http://api.openai.com/v1/responses", {
+  const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -12,16 +11,19 @@ export const POST = async (req: Request) => {
     },
     body: JSON.stringify({
       model: "gpt-4.1-mini",
-      Input: `Extract the following information from the text: ${prompt}      `,
+      input: ` ${prompt}`,
     }),
   });
+
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("HF API error", response.status, errorText);
+    console.error("OpenAI API error", response.status, errorText);
+    return NextResponse.json({ error: errorText }, { status: response.status });
   }
 
   const data = await response.json();
-  const test = data.output[0].content[0].text;
+
+  const test = data?.output?.[0]?.content?.[0]?.text ?? data?.output_text ?? "";
 
   const formattedText = test.replace(/\\n/g, "\n");
 
