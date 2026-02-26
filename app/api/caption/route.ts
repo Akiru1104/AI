@@ -16,7 +16,7 @@ export const POST = async (req: Request) => {
           content: [
             {
               type: "text",
-              text: prompt || "Монгол хэлээр тайлбарлаж бичнэ үү.",
+              text: prompt,
             },
             {
               type: "image_url",
