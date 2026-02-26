@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const POST = async (req: Request) => {
+export async function POST(req: Request) {
   try {
     const { image } = await req.json();
 
@@ -21,16 +21,21 @@ export const POST = async (req: Request) => {
             },
             {
               type: "input_image",
-              image_url: `data:image/jpeg;base64,${image}`,
+              image_url: {
+                url: `data:image/jpeg;base64,${image}`,
+                detail: "auto",
+              },
             },
           ],
         },
       ],
     });
 
-    const caption = response.output_text;
+    const caption =
+      response.output_text || response.output?.[0]?.content?.[0]?.text || "";
+
     return NextResponse.json({ caption });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-};
+}
