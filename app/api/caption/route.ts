@@ -16,7 +16,8 @@ export const POST = async (req: Request) => {
           content: [
             {
               type: "text",
-              text: prompt,
+              text:
+                prompt || "Explain the content of the image in one sentence.",
             },
             {
               type: "image_url",
