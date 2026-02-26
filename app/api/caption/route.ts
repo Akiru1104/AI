@@ -4,38 +4,40 @@ import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   try {
-    const { image } = await req.json();
+    const { imageUrl, prompt } = await req.json();
 
-    const response = await openai.responses.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
-      input: [
+      messages: [
         {
           role: "user",
           content: [
             {
-              type: "input_text",
-              text: "Describe this image in detail",
+              type: "text",
+              text: prompt || "Монгол хэлээр тайлбарлаж бичнэ үү.",
             },
             {
-              type: "input_image",
+              type: "image_url",
               image_url: {
-                url: `data:image/jpeg;base64,${image}`,
-                detail: "auto",
+                url: imageUrl,
               },
             },
           ],
         },
       ],
+      max_tokens: 500,
     });
 
-    const caption =
-      response.output_text || response.output?.[0]?.content?.[0]?.text || "";
+    const caption = response.choices[0]?.message?.content;
 
-    return NextResponse.json({ caption });
+    return NextResponse.json({ output: caption });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 },
+    );
   }
-}
+};
