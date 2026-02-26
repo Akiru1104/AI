@@ -27,6 +27,23 @@ export const FoodGeneration = () => {
     setExtractedInfo([]);
 
     try {
+      const extractRes = await fetch("/api/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const extractData = await extractRes.json();
+      if (!extractRes.ok)
+        throw new Error(extractData?.error || "Extract info failed");
+
+      const infoArray = extractData
+        .split("\n")
+        .map((line: string) => line.trim())
+        .filter((line: string) => line.length > 0);
+
+      setExtractedInfo(infoArray);
+
       const res = await fetch("/api/generate-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
